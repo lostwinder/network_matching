@@ -38,7 +38,7 @@ for line in lines[2:line_num-5-5]:
 
 # open the job_ID_history.txt file for the ClusterID.ProcessID we processed
 # in the very last cron job
-job_ID_history = open("job_ID_history.txt", "r")
+job_ID_history = open("/home/bockelman/zzhang/ELK_stack/job_ID_history.txt", "r")
 lines = job_ID_history.readlines()
 schedd_ID_dict = {}
 if lines:
@@ -157,7 +157,7 @@ print schedd_ID_dict
 output = ""
 for key, value in schedd_ID_dict.iteritems():
   output = output + key + ' ' + value + '\n'
-job_ID_history = open("job_ID_history.txt", "w")
+job_ID_history = open("/home/bockelman/zzhang/ELK_stack/job_ID_history.txt", "w")
 job_ID_history.write(output)
 
 # close all the opening files

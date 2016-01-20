@@ -125,6 +125,8 @@ filebeat:
 
       document_type: condor_history
 
+      ignore_older: 168h
+
   # General filebeat configuration options
   #
   # Event count spool threshold - forces network flush if exceeded

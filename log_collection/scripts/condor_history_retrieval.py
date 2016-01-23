@@ -2,6 +2,7 @@
 
 import subprocess
 import datetime
+import classad
 
 # determine current date & time
 now = datetime.datetime.now()
@@ -12,7 +13,9 @@ timestamp_str = timestamp[0].replace("-","") + "_" + \
 
 collector = "osg-flock.grid.iu.edu"
 #condor_history_log = open("/tmp/condor_history.log", "a+")
-condor_history_log = open("/var/tmp/condor_history/condor_history_" + \
+condor_history_log = open("/home/bockelman/zzhang/ELK_stack/" + \
+                          "condor_history_log_backup/" + \
+                          "condor_history_" + \
                           timestamp_str + ".log", "a+")
 condor_status_command = "condor_status -pool " + collector + " -schedd -wide"
 p = subprocess.Popen(condor_status_command, stdout=subprocess.PIPE, shell=True)
@@ -163,3 +166,24 @@ job_ID_history.write(output)
 # close all the opening files
 job_ID_history.close()
 condor_history_log.close()
+
+# parse the generated condor history log file and evaluate attributes
+# write to new log files
+input = open("/home/bockelman/zzhang/ELK_stack/condor_history_log_backup/" + \
+              "condor_history_" + timestamp_str + ".log", "r")
+output = open("/var/tmp/condor_history/p_condor_history_" + \
+              timestamp_str + ".log", "a+")
+
+while True:
+  try:
+    ad = classad.parseNext(input)
+    for k in ad:
+      if ad.eval(k) is classad.Value.Undefined:
+        del ad[k]
+      else:
+        ad[k] = ad.eval(k)
+    output.write(ad.printOld()+"\n")
+  except StopIteration:
+    break
+input.close()
+output.close()

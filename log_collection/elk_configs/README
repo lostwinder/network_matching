@@ -1,2 +1,37 @@
 Detailed tutorial about installing and configuring the ELK stack can be found at:
 https://www.digitalocean.com/community/tutorials/how-to-install-elasticsearch-logstash-and-kibana-elk-stack-on-centos-7
+
+Some of the classad attributes are with different type of values. For example,
+MATCH_GLIDEIN_ClusterId is parsed as integer, but some classads have this 
+attribute with value "Unknown". Therefore, logstash will report mapper_parse_exception.
+To solve this problem, we set up elasticsearch setting option: ignore_malformed to 
+make sure that if new logs have attributes with type that conflicts with template, 
+that field will not be indexed.
+
+modify the template to make this change apply for all the future newly created indexes
+curl -XPUT 'localhost:9200/_template/logstash_template' -d '
+{
+  "template" : "logstash-*",
+  "settings" : {
+    "index.mapping.ignore_malformed" : true
+  }
+} '
+
+
+to modify this setting on a specific index or index pattern:
+curl -XPUT 'localhost:9200/logstash-*/_settings' -d '
+{
+  "index" : {
+    "mapping.ignore_malformed" : true
+  }
+} '
+
+if the current open index's setting cannot be modified on the fly
+close index first, change the setting, and then reopen:
+curl -XPOST 'localhost:9200/logstash-2016.01.23/_close'
+curl -XPOST 'localhost:9200/logstash-2016.01.23/_open'
+
+Useful links:
+https://www.elastic.co/guide/en/elasticsearch/reference/2.0/ignore-malformed.html
+https://www.elastic.co/guide/en/elasticsearch/reference/2.0/indices-update-settings.html
+https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-templates.html

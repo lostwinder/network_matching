@@ -35,3 +35,16 @@ Useful links:
 https://www.elastic.co/guide/en/elasticsearch/reference/2.0/ignore-malformed.html
 https://www.elastic.co/guide/en/elasticsearch/reference/2.0/indices-update-settings.html
 https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-templates.html
+
+
+
+# How to do a range filter query on Kibana dashboard
+{
+  "range": {
+    "TransferInputSizeMB": {
+      "gte": 100,
+      "lte": 10000,
+      "boost": 1
+    }
+  }
+}

@@ -104,14 +104,20 @@ for schedd in schedd_list:
       ProcessID_flag = False
       while(j < len(lines)):
         if(lines[j] != ''):
-          output = output + lines[j] + '\n'
-          key = lines[j].split(" = ")[0]
-          value = lines[j].split(" = ")[1]
+          #output = output + lines[j] + '\n'
+          if "=" in lines[j]:
+            key = lines[j].split(" = ", 1)[0]
+            value = lines[j].split(" = ", 1)[1]
+            if value.startswith("\"") and not value.endswith("\""):
+              value = value + "\""
+              output = output + lines[j] + "\"" + "\n"
+            else:
+              output = output + lines[j] + "\n"
 
-          if key == "ClusterId" and value == old_ClusterID:
-            ClusterID_flag = True
-          if key == "ProcId" and value == old_ProcessID:
-            ProcessID_flag = True
+            if key == "ClusterId" and value == old_ClusterID:
+              ClusterID_flag = True
+            if key == "ProcId" and value == old_ProcessID:
+              ProcessID_flag = True
         else:
           output = output + '\n'
           if ClusterID_flag == True and ProcessID_flag == True:

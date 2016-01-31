@@ -180,6 +180,7 @@ input = open("/home/bockelman/zzhang/ELK_stack/condor_history_log_backup/" + \
 output = open("/var/tmp/condor_history/p_condor_history_" + \
               timestamp_str + ".log", "a+")
 
+global_job_id_set = set()
 while True:
   try:
     ad = classad.parseNext(input)
@@ -188,7 +189,14 @@ while True:
         del ad[k]
       else:
         ad[k] = ad.eval(k)
-    output.write(ad.printOld()+"\n")
+    if "GlobalJobId" in ad.keys():
+      if ad["GlobalJobId"] in global_job_id_set:
+        pass
+      else:
+        global_job_id_set.add(ad["GlobalJobId"])
+        output.write(ad.printOld()+"\n")
+    else:
+      output.write(ad.printOld()+"\n")
   except StopIteration:
     break
 input.close()

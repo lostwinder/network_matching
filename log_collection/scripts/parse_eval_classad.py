@@ -24,6 +24,7 @@ lines = filter(lambda a: a != '', lines)
 for line in lines:
   input = open(dir+"/"+line, "r")
   output = open(dir+"/p_"+line, "a+")
+  global_job_id_set = set()
   while True:
     try:
       ad = classad.parseNext(input)
@@ -32,7 +33,14 @@ for line in lines:
           del ad[k]
         else:
           ad[k] = ad.eval(k)
-      output.write(ad.printOld()+"\n")
+      if "GlobalJobId" in ad.keys():
+        if ad["GlobalJobId"] in global_job_id_set:
+          pass
+        else:
+          global_job_id_set.add(ad["GlobalJobId"])
+          output.write(ad.printOld()+"\n")
+      else:
+        output.write(ad.printOld()+"\n")
     except StopIteration:
       break
 

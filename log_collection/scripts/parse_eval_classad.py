@@ -9,6 +9,17 @@ import subprocess
 import classad
 import types
 
+def classad_attr_atoi(ad, attr):
+  """
+  convert numeric classad attribute from string to long
+  """
+  if attr in ad.keys():
+    if ad[attr] == "\"\"":
+      del ad[attr]
+    else:
+      if type(ad[attr]) is types.StringType:
+        ad[attr] = long(ad[attr])
+
 # Get the list of condor history log files
 dir = "/home/bockelman/zzhang/ELK_stack/condor_history_log_backup_new"
 p = subprocess.Popen("ls " + dir, stdout=subprocess.PIPE, shell=True)
@@ -38,33 +49,12 @@ for line in lines:
           pass
         else:
           global_job_id_set.add(ad["GlobalJobId"])
-          if "Chirp_StashCp_DlTimeMs" in ad.keys():
-            if ad["Chirp_StashCp_DlTimeMs"] == "\"\"":
-              del ad["Chirp_StashCp_DlTimeMs"]
-            else:
-              if type(ad["Chirp_StashCp_DlTimeMs"]) is types.StringType:
-                ad["Chirp_StashCp_DlTimeMs"] = long(ad["Chirp_StashCp_DlTimeMs"])
-          if "Chirp_StashCp_FileSize" in ad.keys():
-            if ad["Chirp_StashCp_FileSize"] == "\"\"":
-              del ad["Chirp_StashCp_FileSize"]
-            else:
-              if type(ad["Chirp_StashCp_DlTimeMs"]) is types.StringType:
-                ad["Chirp_StashCp_FileSize"] = long(ad["Chirp_StashCp_FileSize"])
+          classad_attr_atoi(ad, "Chirp_StashCp_DlTimeMs")
+          classad_attr_atoi(ad, "Chirp_StashCp_FileSize")
           output.write(ad.printOld()+"\n")
       else:
-        #TODO same logic for Chirp related attribute here before write to output
-        if "Chirp_StashCp_DlTimeMs" in ad.keys():
-          if ad["Chirp_StashCp_DlTimeMs"] == "\"\"":
-            del ad["Chirp_StashCp_DlTimeMs"]
-          else:
-            if type(ad["Chirp_StashCp_DlTimeMs"]) is types.StringType:
-              ad["Chirp_StashCp_DlTimeMs"] = long(ad["Chirp_StashCp_DlTimeMs"])
-        if "Chirp_StashCp_FileSize" in ad.keys():
-          if ad["Chirp_StashCp_FileSize"] == "\"\"":
-            del ad["Chirp_StashCp_FileSize"]
-          else:
-            if type(ad["Chirp_StashCp_FileSize"]) is types.StringType:
-              ad["Chirp_StashCp_FileSize"] = long(ad["Chirp_StashCp_FileSize"])
+        classad_attr_atoi(ad, "Chirp_StashCp_DlTimeMs")
+        classad_attr_atoi(ad, "Chirp_StashCp_FileSize")
         output.write(ad.printOld()+"\n")
     except StopIteration:
       break

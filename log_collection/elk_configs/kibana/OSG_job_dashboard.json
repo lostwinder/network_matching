@@ -1,0 +1,21 @@
+[
+  {
+    "_id": "OSG-HTCondor-Job-Analysis",
+    "_type": "dashboard",
+    "_source": {
+      "title": "OSG HTCondor Job Analysis",
+      "hits": 0,
+      "description": "",
+      "panelsJSON": "[{\"col\":10,\"id\":\"Number-of-Jobs\",\"panelIndex\":1,\"row\":6,\"size_x\":3,\"size_y\":2,\"type\":\"visualization\"},{\"col\":4,\"id\":\"OSG-User-Ranking\",\"panelIndex\":2,\"row\":1,\"size_x\":4,\"size_y\":5,\"type\":\"visualization\"},{\"col\":1,\"id\":\"Transfer-input-Size-(MB)-histogram-distribution\",\"panelIndex\":3,\"row\":27,\"size_x\":12,\"size_y\":7,\"type\":\"visualization\"},{\"col\":8,\"id\":\"OSG-computing-sites-job-distribution-(#-of-jobs)\",\"panelIndex\":4,\"row\":1,\"size_x\":5,\"size_y\":5,\"type\":\"visualization\"},{\"col\":1,\"id\":\"JobStatus-distribution\",\"panelIndex\":5,\"row\":1,\"size_x\":3,\"size_y\":3,\"type\":\"visualization\"},{\"col\":1,\"id\":\"RemoteWallClockTime-Percentiles-(against-each-user)\",\"panelIndex\":6,\"row\":14,\"size_x\":12,\"size_y\":9,\"type\":\"visualization\"},{\"col\":1,\"id\":\"#-of-jobs-for-each-user-(bar-graph)\",\"panelIndex\":7,\"row\":23,\"size_x\":12,\"size_y\":4,\"type\":\"visualization\"},{\"col\":1,\"id\":\"Stage-in-transfer-time-distribution\",\"panelIndex\":8,\"row\":34,\"size_x\":12,\"size_y\":8,\"type\":\"visualization\"},{\"id\":\"Unique-Count-of-GlobalJobId\",\"type\":\"visualization\",\"panelIndex\":9,\"size_x\":3,\"size_y\":2,\"col\":4,\"row\":6},{\"id\":\"Count-of-GlobalJobId\",\"type\":\"visualization\",\"panelIndex\":10,\"size_x\":3,\"size_y\":2,\"col\":7,\"row\":6},{\"id\":\"CommittedTime-Percentiles-against-each-user\",\"type\":\"visualization\",\"panelIndex\":11,\"size_x\":12,\"size_y\":6,\"col\":1,\"row\":8}]",
+      "optionsJSON": "{\"darkTheme\":true}",
+      "uiStateJSON": "{\"P-3\":{\"spy\":{\"mode\":{\"fill\":false,\"name\":null}}},\"P-6\":{\"spy\":{\"mode\":{\"fill\":false,\"name\":null}}},\"P-8\":{\"spy\":{\"mode\":{\"name\":null,\"fill\":false}}}}",
+      "version": 1,
+      "timeRestore": true,
+      "timeTo": "now/d",
+      "timeFrom": "now/d",
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"filter\":[{\"$state\":{\"store\":\"globalState\"},\"meta\":{\"alias\":null,\"disabled\":true,\"index\":\"logstash-*\",\"key\":\"TransferInputSizeMB\",\"negate\":false,\"value\":\"100 to 10,000\"},\"range\":{\"TransferInputSizeMB\":{\"boost\":1,\"gte\":100,\"lte\":10000}}},{\"meta\":{\"index\":\"logstash-*\",\"key\":\"JobStatus\",\"value\":\"4\",\"disabled\":true,\"negate\":false,\"alias\":null},\"query\":{\"match\":{\"JobStatus\":{\"query\":4,\"type\":\"phrase\"}}},\"$state\":{\"store\":\"globalState\"}},{\"query\":{\"bool\":{\"must\":[{\"exists\":{\"field\":\"JobCurrentStartDate\"}},{\"exists\":{\"field\":\"JobCurrentStartExecutingDate\"}}]}},\"$state\":{\"store\":\"globalState\"},\"meta\":{\"key\":\"query\",\"value\":\"{\\\"bool\\\":{\\\"must\\\":[{\\\"exists\\\":{\\\"field\\\":\\\"JobCurrentStartDate\\\"}},{\\\"exists\\\":{\\\"field\\\":\\\"JobCurrentStartExecutingDate\\\"}}]}}\",\"disabled\":false,\"negate\":false,\"alias\":null}},{\"meta\":{\"index\":\"logstash-*\",\"field\":\"StageInTransferTime\",\"key\":\"StageInTransferTime\",\"value\":\"1,000\",\"disabled\":true,\"negate\":false,\"alias\":null},\"script\":{\"script\":\"(doc['JobCurrentStartExecutingDate'].value-doc['JobCurrentStartDate'].value) <= value\",\"lang\":\"expression\",\"params\":{\"value\":1000}},\"$state\":{\"store\":\"globalState\"}},{\"meta\":{\"index\":\"logstash-*\",\"key\":\"JobStatus\",\"value\":\"4\",\"disabled\":false,\"negate\":false,\"alias\":null},\"query\":{\"match\":{\"JobStatus\":{\"query\":4,\"type\":\"phrase\"}}},\"$state\":{\"store\":\"globalState\"}},{\"query\":{\"query_string\":{\"query\":\"*\",\"analyze_wildcard\":true}}}]}"
+      }
+    }
+  }
+]

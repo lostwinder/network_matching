@@ -1,0 +1,100 @@
+[
+  {
+    "_id": "Check-both-JobCurrentStartDate-and-JobCurrentStartExecutingDate-exist",
+    "_type": "search",
+    "_source": {
+      "title": "Check both JobCurrentStartDate and JobCurrentStartExecutingDate exist",
+      "description": "",
+      "hits": 0,
+      "columns": [
+        "QDate",
+        "JobStartDate",
+        "JobCurrentStartDate",
+        "JobCurrentStartExecutingDate",
+        "RemoteWallClockTime",
+        "JobCurrentStartTransferOutputDate",
+        "CompletionDate"
+      ],
+      "sort": [
+        "@timestamp",
+        "desc"
+      ],
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\n  \"index\": \"logstash-*\",\n  \"query\": {\n    \"bool\": {\n      \"must\": [\n        {\n          \"exists\": {\n            \"field\": \"JobCurrentStartDate\"\n          }\n        },\n        {\n          \"exists\": {\n            \"field\": \"JobCurrentStartExecutingDate\"\n          }\n        }\n      ]\n    }\n  },\n  \"filter\": [],\n  \"highlight\": {\n    \"pre_tags\": [\n      \"@kibana-highlighted-field@\"\n    ],\n    \"post_tags\": [\n      \"@/kibana-highlighted-field@\"\n    ],\n    \"fields\": {\n      \"*\": {}\n    },\n    \"require_field_match\": false,\n    \"fragment_size\": 2147483647\n  }\n}"
+      }
+    }
+  },
+  {
+    "_id": "Search-on-multiple-fields",
+    "_type": "search",
+    "_source": {
+      "title": "Search on multiple fields",
+      "description": "",
+      "hits": 0,
+      "columns": [
+        "QDate",
+        "JobStartDate",
+        "JobCurrentStartDate",
+        "JobCurrentStartExecutingDate",
+        "RemoteWallClockTime",
+        "JobCurrentStartTransferOutputDate",
+        "CompletionDate"
+      ],
+      "sort": [
+        "@timestamp",
+        "desc"
+      ],
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\n  \"index\": \"logstash-*\",\n  \"query\": {\n    \"bool\": {\n      \"must\": [\n        {\n          \"match\": {\n            \"Owner\": \"dbala\"\n          }\n        },\n        {\n          \"match\": {\n            \"MATCH_EXP_JOBGLIDEIN_ResourceName\": \"MWT2\"\n          }\n        },\n        {\n          \"match\": {\n            \"TransferInputSizeMB\": 159\n          }\n        }\n      ]\n    }\n  },\n  \"filter\": [],\n  \"highlight\": {\n    \"pre_tags\": [\n      \"@kibana-highlighted-field@\"\n    ],\n    \"post_tags\": [\n      \"@/kibana-highlighted-field@\"\n    ],\n    \"fields\": {\n      \"*\": {}\n    },\n    \"require_field_match\": false,\n    \"fragment_size\": 2147483647\n  }\n}"
+      }
+    }
+  },
+  {
+    "_id": "Check-stashcache-exists",
+    "_type": "search",
+    "_source": {
+      "title": "Check stashcache exists",
+      "description": "",
+      "hits": 0,
+      "columns": [
+        "QDate",
+        "JobStartDate",
+        "JobCurrentStartDate",
+        "JobCurrentStartExecutingDate",
+        "RemoteWallClockTime",
+        "JobCurrentStartTransferOutputDate",
+        "CompletionDate"
+      ],
+      "sort": [
+        "@timestamp",
+        "desc"
+      ],
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"logstash-*\",\"query\":{\"bool\":{\"must\":[{\"exists\":{\"field\":\"Chirp_StashCp_FileSize\"}}]}},\"filter\":[],\"highlight\":{\"pre_tags\":[\"@kibana-highlighted-field@\"],\"post_tags\":[\"@/kibana-highlighted-field@\"],\"fields\":{\"*\":{}},\"require_field_match\":false,\"fragment_size\":2147483647}}"
+      }
+    }
+  },
+  {
+    "_id": "All-events-with-attribute-\"Owner\"-(equivalent-as-number-of-jobs)",
+    "_type": "search",
+    "_source": {
+      "title": "All events with attribute \"Owner\" (equivalent as number of jobs)",
+      "description": "",
+      "hits": 0,
+      "columns": [
+        "_source"
+      ],
+      "sort": [
+        "@timestamp",
+        "desc"
+      ],
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\n  \"index\": \"logstash-*\",\n  \"query\": {\n    \"bool\": {\n      \"must\": [\n        {\n          \"exists\": {\n            \"field\": \"Owner\"\n          }\n        }\n      ]\n    }\n  },\n  \"filter\": [],\n  \"highlight\": {\n    \"pre_tags\": [\n      \"@kibana-highlighted-field@\"\n    ],\n    \"post_tags\": [\n      \"@/kibana-highlighted-field@\"\n    ],\n    \"fields\": {\n      \"*\": {}\n    },\n    \"require_field_match\": false,\n    \"fragment_size\": 2147483647\n  }\n}"
+      }
+    }
+  }
+]

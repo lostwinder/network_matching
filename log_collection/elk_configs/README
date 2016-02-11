@@ -48,3 +48,8 @@ https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-template
     }
   }
 }
+
+
+
+Clear Cache in ElasticSearch: curl -XPOST 'http://localhost:9200/twitter/_cache/clear'
+Delete index in ElasticSearch: curl -XDELETE 'http://localhost:9200/twitter/'

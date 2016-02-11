@@ -1,0 +1,2 @@
+debug in command line:
+/usr/bin/filebeat -e -v -c /etc/filebeat/filebeat.yml

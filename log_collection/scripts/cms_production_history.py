@@ -55,6 +55,7 @@ for line in lines[2:line_num-5]:
   ignore_list.append("crab3-5@vocms059.cern.ch")
   ignore_list.append("crab3-4@vocms066.cern.ch")
   ignore_list.append("crab3test-2@vocms095.cern.ch")
+  ignore_list.append("crab3test-3@vocms096.cern.ch")
   if words[0] not in ignore_list:
     print words[0]
     schedd_list.append(words[0])
@@ -198,7 +199,7 @@ condor_history_log.close()
 # write to new log files
 input = open("/home/bockelman/zzhang/ELK_stack/cms_production_log_backup/" + \
               "condor_history_" + timestamp_str + ".log", "r")
-output = open("/var/tmp/cms_production/p_condor_history_" + \
+output = open("/var/log/cms_production/p_condor_history_" + \
               timestamp_str + ".log", "a+")
 
 global_job_id_set = set()

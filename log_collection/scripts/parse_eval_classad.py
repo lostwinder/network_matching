@@ -14,7 +14,7 @@ def classad_attr_atoi(ad, attr):
   convert numeric classad attribute from string to long
   """
   if attr in ad.keys():
-    if ad[attr] == "\"\"":
+    if ad[attr] == "":
       del ad[attr]
     else:
       if type(ad[attr]) is types.StringType:

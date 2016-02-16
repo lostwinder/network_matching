@@ -177,7 +177,7 @@ condor_history_log.close()
 # write to new log files
 input = open("/home/bockelman/zzhang/ELK_stack/condor_history_log_backup/" + \
               "condor_history_" + timestamp_str + ".log", "r")
-output = open("/var/tmp/condor_history/p_condor_history_" + \
+output = open("/var/log/condor_history/p_condor_history_" + \
               timestamp_str + ".log", "a+")
 
 global_job_id_set = set()

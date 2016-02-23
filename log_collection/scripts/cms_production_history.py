@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+import os
 import subprocess
 import datetime
 import classad
@@ -21,11 +22,11 @@ timestamp_str = timestamp[0].replace("-","") + "_" + \
                 timestamp[1].split(".")[0].replace(":","")
 
 collector = "vocms099.cern.ch"
-#condor_history_log = open("/tmp/condor_history.log", "a+")
-condor_history_log = open("/home/bockelman/zzhang/ELK_stack/" + \
-                          "cms_production_log_backup/" + \
-                          "condor_history_" + \
-                          timestamp_str + ".log", "a+")
+raw_log = "/home/bockelman/zzhang/ELK_stack/cms_production_log_backup/condor_history_" + timestamp_str + ".log"
+processed_log = "/var/log/cms_production/p_condor_history_" + timestamp_str + ".log"
+checkpoint_path = "/home/bockelman/zzhang/ELK_stack/cms_production_job_ID_history.txt"
+
+condor_history_log = open(raw_log, "a+")
 condor_status_command = "condor_status -pool " + collector + " -schedd -wide"
 p = subprocess.Popen(condor_status_command, stdout=subprocess.PIPE, shell=True)
 (output, err) = p.communicate()
@@ -39,10 +40,6 @@ line_num = len(lines)
 schedd_list = []
 for line in lines[2:line_num-5]:
   words = line.split(' ')
-  #index = 1
-  # collect the machine instead of name attribute
-  #while(words[index] == ''):
-  #  index = index + 1
 
   # process schedd that waits for ever...
   ignore_list = []
@@ -56,6 +53,9 @@ for line in lines[2:line_num-5]:
   ignore_list.append("crab3-4@vocms066.cern.ch")
   ignore_list.append("crab3test-2@vocms095.cern.ch")
   ignore_list.append("crab3test-3@vocms096.cern.ch")
+  # ignore two schedds that return Error opening history file
+  ignore_list.append("vocms005.cern.ch")
+  ignore_list.append("vocms053.cern.ch")
   if words[0] not in ignore_list:
     print words[0]
     schedd_list.append(words[0])
@@ -63,7 +63,7 @@ for line in lines[2:line_num-5]:
 
 # open the job_ID_history.txt file for the ClusterID.ProcessID we processed
 # in the very last cron job
-job_ID_history = open("/home/bockelman/zzhang/ELK_stack/cms_production_job_ID_history.txt", "r")
+job_ID_history = open(checkpoint_path, "r")
 lines = job_ID_history.readlines()
 schedd_ID_dict = {}
 if lines:
@@ -188,7 +188,7 @@ print schedd_ID_dict
 output = ""
 for key, value in schedd_ID_dict.iteritems():
   output = output + key + ' ' + value + '\n'
-job_ID_history = open("/home/bockelman/zzhang/ELK_stack/cms_production_job_ID_history.txt", "w")
+job_ID_history = open(checkpoint_path, "w")
 job_ID_history.write(output)
 
 # close all the opening files
@@ -197,10 +197,8 @@ condor_history_log.close()
 
 # parse the generated condor history log file and evaluate attributes
 # write to new log files
-input = open("/home/bockelman/zzhang/ELK_stack/cms_production_log_backup/" + \
-              "condor_history_" + timestamp_str + ".log", "r")
-output = open("/var/log/cms_production/p_condor_history_" + \
-              timestamp_str + ".log", "a+")
+input = open(raw_log, "r")
+output = open(processed_log, "a+")
 
 global_job_id_set = set()
 while True:
@@ -225,3 +223,6 @@ while True:
     break
 input.close()
 output.close()
+
+# delete the raw history log after the processed log is generated
+os.remove(raw_log)

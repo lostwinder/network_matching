@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+import os
 import subprocess
 import datetime
 import classad
@@ -12,7 +13,6 @@ timestamp_str = timestamp[0].replace("-","") + "_" + \
                 timestamp[1].split(".")[0].replace(":","")
 
 collector = "osg-flock.grid.iu.edu"
-#condor_history_log = open("/tmp/condor_history.log", "a+")
 condor_history_log = open("/home/bockelman/zzhang/ELK_stack/" + \
                           "condor_history_log_backup/" + \
                           "condor_history_" + \
@@ -201,3 +201,5 @@ while True:
     break
 input.close()
 output.close()
+
+os.remove("/home/bockelman/zzhang/ELK_stack/condor_history_log_backup/condor_history_" + timestamp_str + ".log")

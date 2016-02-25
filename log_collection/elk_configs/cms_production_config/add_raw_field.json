@@ -1,0 +1,30 @@
+{
+  "template" : "osg-*",
+  "order" : 3,
+  "mappings" : {
+    "_default_" : {
+      "dynamic_templates" : [ {
+        "string_fields" : {
+          "mapping" : {
+            "fielddata" : {
+              "format" : "disabled"
+            },
+            "index" : "analyzed",
+            "omit_norms" : true,
+            "type" : "string",
+            "fields" : {
+              "raw" : {
+                "ignore_above" : 256,
+                "index" : "not_analyzed",
+                "type" : "string",
+                "doc_values" : true
+              }
+            }
+          },
+          "match_mapping_type" : "string",
+          "match" : "*"
+        }
+      } ]
+    }
+  }
+}

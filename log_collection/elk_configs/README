@@ -9,9 +9,12 @@ make sure that if new logs have attributes with type that conflicts with templat
 that field will not be indexed.
 
 modify the template to make this change apply for all the future newly created indexes
+need to add order to make sure it does not conflict with other existing teamplates
+basically all the templated will be applied (marged) in order from low to high
 curl -XPUT 'localhost:9200/_template/logstash_template' -d '
 {
   "template" : "logstash-*",
+  "order" : 1,
   "settings" : {
     "index.mapping.ignore_malformed" : true
   }

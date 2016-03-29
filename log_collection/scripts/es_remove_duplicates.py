@@ -21,8 +21,9 @@ cms_index_list = [\
   'logstash-2016.03.08'
 ]
 
+GlobalJobId_dict = set()
+
 for index_name in cms_index_list:
-  GlobalJobId_dict = set()
   page = es.search(
     index = index_name,
     doc_type = 'cms_production',

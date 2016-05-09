@@ -31,12 +31,14 @@ string_values = set([\
   "MyAddress",
   "MyType",
   "Name",
+  "PrivateNetworkName",
   "RecentJobsBadputRuntimes",
   "RecentJobsBadputSizes",
   "RecentJobsCompletedRuntimes",
   "RecentJobsCompletedSizes",
   "ScheddIpAddr",
   "ScheddName",
+  "SPOOL_DIR_STRING",
   "StartLocalUniverse",
   "StartSchedulerUniverse",
   "TargetType",
@@ -50,6 +52,12 @@ int_values = set([\
   "RecentShadowsStarted",
   "DetectedCpus",
   "DetectedMemory",
+  "FileTransferDiskThrottleExcess_1h",
+  "FileTransferDiskThrottleExcess_1m",
+  "FileTransferDiskThrottleExcess_5m",
+  "FileTransferDiskThrottleHigh",
+  "FileTransferDiskThrottleLimit",
+  "FileTransferDiskThrottleLow",
   "FileTransferDownloadBytes",
   "FileTransferFileReadSeconds",
   "FileTransferFileWriteSeconds",
@@ -173,6 +181,9 @@ int_values = set([\
 
 float_values = set([\
   "DaemonCoreDutyCycle",
+  "FileTransferDiskThrottleShortfall_1h",
+  "FileTransferDiskThrottleShortfall_1m",
+  "FileTransferDiskThrottleShortfall_5m",
   "FileTransferDownloadBytesPerSecond_1d",
   "FileTransferDownloadBytesPerSecond_1h",
   "FileTransferDownloadBytesPerSecond_1m",
@@ -256,12 +267,13 @@ def get_all_schedd_ads():
     else:
       schedd_name = schedd_list[i]["Name"]
 
-    print schedd_name
+    collection_time = int(time.time())
 
     #output = open(path_prefix+schedd_name+".txt", 'a')
     #output = open(schedd_name+".txt", 'a')
     try:
       schedd_ad = coll.directQuery(htcondor.DaemonTypes.Schedd, name=schedd_name)
+      schedd_ad["DataCollectionDate"] = collection_time
     except ValueError: # unable to find daemon
       continue
     except IOError: # failed to communicate with collector
@@ -278,24 +290,27 @@ def preprocess_schedd_ads(schedd_ads):
   results = []
   for ad in schedd_ads:
       result = {}
-      result["DataCollectionDate"] = start_time
+      #result["DataCollectionDate"] = start_time
       result["ScheddName"] = ad["Name"]
       result["FileTransferUploadGB"] = ad.get("FileTransferUploadBytes", 0) / 1024 / 1024 / 1024
       result["FileTransferDownloadGB"] = ad.get("FileTransferDownloadBytes", 0) / 1024 / 1024 / 1024
 
       for key in ad.keys():
         try:
-          result[key] = ad.eval(key)
+          value = ad.eval(key)
         except:
           continue
 
+        if key in string_values:
+          result[key] = str(value)
+        else:
+          result[key] = value     
+
       json_ad = json.dumps(result)
-      print json_ad
-      datetime_object = datetime.datetime.utcfromtimestamp(start_time)
-      timestamp_str = str(datetime_object).replace(' ', '-')[:-7]
+      datetime_object = datetime.datetime.utcfromtimestamp(result["DataCollectionDate"])
+      timestamp_str = str(datetime_object).replace(' ', '-')
       id = result["Name"] + "##" + timestamp_str
       results.append((id, json_ad))
-      
   return results
 
 def make_mappings():
@@ -328,7 +343,9 @@ def make_mapping(idx):
   if result.get("status") != 400:
     print "Creation of index %s: %s" % (idx, str(result))
 
-_index_cache = set()
+index_cache_file = open("index_cache", 'a+')
+_index_cache = set(index_cache_file.readline().split(" "))
+print _index_cache
 def get_index(timestamp):
   _es_handle = get_server_handle()
   idx = time.strftime("osg-schedd-%Y-%m-%d", datetime.datetime.utcfromtimestamp(timestamp).timetuple())
@@ -336,6 +353,7 @@ def get_index(timestamp):
     return idx
   make_mapping(idx)
   _index_cache.add(idx)
+  index_cache_file.write(idx+" ")
   return idx
 
 def post_ads(es, idx, ads):
@@ -343,11 +361,20 @@ def post_ads(es, idx, ads):
   for id, ad in ads:
     body += json.dumps({"index": {"_index": idx, "_type": "schedd", "_id": id}}) + "\n"
     body += ad + "\n"
+  #print body
   es.bulk(body=body) 
 
 if __name__ == "__main__":
   schedd_ads = get_all_schedd_ads()
-  results = preprocess_schedd_ads(schedd_ads)
-  idx = get_index(start_time)
-  es = htcondor_es.es.get_server_handle()
-  post_ads(es, idx, results)
+  es = get_server_handle()
+  index_schedd_dict = {}
+  for ad in schedd_ads:
+    index = get_index(ad["DataCollectionDate"])
+    if index in index_schedd_dict:
+      index_schedd_dict[index].append(ad)
+    else:
+      index_schedd_dict[index] = [ad]
+  for idx in index_schedd_dict.keys():
+    results = preprocess_schedd_ads(index_schedd_dict[idx])
+    post_ads(es, idx, results)
+  index_cache_file.close()

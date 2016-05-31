@@ -29,7 +29,8 @@ completion_date = []
 # value: a list of attributes, the order of attributes are as following
 # 1:ExecutionSite         2:TransferInputSizeMB          3:QDate 
 # 4:JobCurrentStartDate   5:JobCurrentStartExecutingDate 6:JobCompletionDate 
-# 7:ActualTransferTime    8:EstimatedTransferTime        9:MachineSlot
+# 7:RelativeSubmitDate    8:QueuedTime                   9:ActualTransferTime
+# 10:ExecutionTime        11:EstimatedTransferTime       12:MachineSlot
 time_stat_dict = {}
 
 f = open(job_ad_file, "r")
@@ -50,6 +51,21 @@ for line in lines:
   if "CompletionDate" in line:
     completion_date.append(line.split(" ")[2][:-1])
 
+# get the earliest submit time
+earliest_submit_time = long(qdate[0])
+for value in qdate:
+  if earliest_submit_time > long(value):
+    earliest_submit_time = long(value)
+relative_submit_time = []
+for value in qdate:
+  relative_submit_time.append(str(long(value)-earliest_submit_time))
+queued_time = []
+execution_time = []
+for i in range(num):
+  queued_time.append(str(long(start_date[i])-long(qdate[i])))
+  execution_time.append(str(long(completion_date[i])-long(start_exec_date[i])))
+
+
 for i in range(num):
   key = cluster_id[i]
   time_stat_dict[key] = []
@@ -59,8 +75,11 @@ for i in range(num):
   time_stat_dict[key].append(start_date[i])
   time_stat_dict[key].append(start_exec_date[i])
   time_stat_dict[key].append(completion_date[i])
+  time_stat_dict[key].append(relative_submit_time[i])
+  time_stat_dict[key].append(queued_time[i])
   actual_transfer_time = long(start_exec_date[i]) - long(start_date[i])
   time_stat_dict[key].append(str(actual_transfer_time))
+  time_stat_dict[key].append(execution_time[i])
     
 
 total_file_transfer_time = 0
@@ -104,20 +123,28 @@ for line in estimation_info:
 # the columns are arranged in the following structure
 # 1:ClusterId          2:ExecutionSite          3:TransferInputSizeMB
 # 4:QDate              5:JobCurrentStartDate    6:JobCurrentStartExecutingDate 
-# 7:JobCompletionDate  8:ActualTransferTime     9:EstimatedTransferTime
-# 10:MachineSlot
+# 7:JobCompletionDate  8:RelativeSubmitDate     8:QueuedTime             
+# 9:ActualTransferTime 10:ExecutionTime         11:EstimatedTransferTime 
+# 12:MachineSlot       13:MachineSlotRenamed    
 
 f = open(exp_result_file, 'w')
 f.write("ClusterId" + " " + "ExecutionSite" + " " + "TransferInputSizeMB" + " "
         + "QDate" + " " + "JobCurrentStartDate" + " " + 
 	"JobCurrentStartExecutingDate" + " " + "JobCompletionDate" + " " +
-	"ActualTransferTime" + " " + "EstimatedTransferTime" + " " + 
-	"MachineSlot" + "\n")
+	"SubmitTime" + " " + "ActualTransferTime" + " " + "QueuedTime" + " " 
+	+ "ExecTime" + "EstimatedTransferTime" + " " + 
+	"MachineSlot" + " " + "MachineSlotRenamed" + "\n")
 for key in sorted(time_stat_dict):
   line = key
   for attr in time_stat_dict[key]:
     line += " "
     line += attr
+  # MachineSlotRenamed (This is for sorting in excel based on this attr)
+  slot_name = time_stat_dict[key][-1]
+  words = slot_name.split("@")
+  renamed_slot = words[1] + "@" + words[0]
+  line += " "
+  line += renamed_slot
   f.write(line + '\n')
 
 f.write("Total_file_transfer_time: " + str(total_file_transfer_time) + "\n")

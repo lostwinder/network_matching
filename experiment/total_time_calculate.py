@@ -56,6 +56,12 @@ earliest_submit_time = long(qdate[0])
 for value in qdate:
   if earliest_submit_time > long(value):
     earliest_submit_time = long(value)
+# get the latest job completion time
+latest_job_completion_time = long(completion_date[0])
+for value in completion_date:
+  if latest_job_completion_time < long(value):
+    latest_job_completion_time = long(value)
+
 relative_submit_time = []
 for value in qdate:
   relative_submit_time.append(str(long(value)-earliest_submit_time))
@@ -84,13 +90,14 @@ for i in range(num):
 
 total_file_transfer_time = 0
 total_job_time = 0
-
+make_span = latest_job_completion_time - earliest_submit_time
 for i in range(num):
   total_file_transfer_time += long(start_exec_date[i]) - long(start_date[i])
   total_job_time += long(completion_date[i]) - long(qdate[i])
 
 print 'Total file transfer time is %ld.' % total_file_transfer_time
 print 'Total job time is %ld.' % total_job_time
+print 'Total make span time is %ld.' % make_span
 
 # process condor negotiator log for estimated file tranfer time in  matchmaking
 # first process NegotiatorLog.old, then NegotiatorLog
@@ -131,8 +138,8 @@ f = open(exp_result_file, 'w')
 f.write("ClusterId" + " " + "ExecutionSite" + " " + "TransferInputSizeMB" + " "
         + "QDate" + " " + "JobCurrentStartDate" + " " + 
 	"JobCurrentStartExecutingDate" + " " + "JobCompletionDate" + " " +
-	"SubmitTime" + " " + "ActualTransferTime" + " " + "QueuedTime" + " " 
-	+ "ExecTime" + "EstimatedTransferTime" + " " + 
+	"SubmitTime" + " " + "QueuedTime" + " " + "ActualTransferTime" + " " 
+	+ "ExecTime" + " " + "EstimatedTransferTime" + " " + 
 	"MachineSlot" + " " + "MachineSlotRenamed" + "\n")
 for key in sorted(time_stat_dict):
   line = key
@@ -149,3 +156,4 @@ for key in sorted(time_stat_dict):
 
 f.write("Total_file_transfer_time: " + str(total_file_transfer_time) + "\n")
 f.write("Total_job_time: " + str(total_job_time) + "\n")
+f.write("Make_span_time: " + str(make_span) + "\n")
